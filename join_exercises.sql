@@ -72,6 +72,7 @@ USING (emp_no)
 JOIN titles
 USING (emp_no)
 WHERE titles.to_date > NOW() AND dept_name = 'Customer Service'
+AND dept_emp.to_date > NOW()
 GROUP BY titles.title;
 
 -- Find the current salary of all current managers.
@@ -106,6 +107,7 @@ USING (dept_no)
 JOIN salaries
 USING (emp_no)
 WHERE salaries.to_date > NOW()
+AND dept_emp.to_date > NOW()
 GROUP BY dept_name
 ORDER BY average_salary DESC
 LIMIT 1;
@@ -124,6 +126,22 @@ WHERE salaries.to_date > NOW() AND dept_name = 'Marketing'
 ORDER BY salary DESC
 LIMIT 1
 ;
+
+-- Which current department manager has the highest salary?
+
+SELECT first_name, last_name, salary, dept_name
+FROM departments
+JOIN dept_manager
+USING (dept_no)
+JOIN employees
+USING (emp_no)
+JOIN salaries
+USING (emp_no)
+WHERE dept_manager.to_date > NOW() AND salaries.to_date > NOW()
+ORDER BY salary DESC
+LIMIT 1
+;
+
 -- Determine the average salary for each department. Use all salary information and round your results.
 
 SELECT dept_name, ROUND(AVG(salary)) AS average_salary
@@ -147,12 +165,12 @@ USING (emp_no)
 JOIN dept_emp
 USING (emp_no)
 JOIN (SELECT 
-		CONCAT(employees.first_name, ' ', employees.last_name) AS manager,
-		dept_manager.dept_no, 
-		dept_manager.to_date
+	CONCAT(employees.first_name, ' ', employees.last_name) AS manager,
+	dept_manager.dept_no, 
+	dept_manager.to_date
     FROM dept_manager
 	LEFT JOIN employees 
-		USING (emp_no)
+	USING (emp_no)
 	) as dm
 WHERE dm.to_date > NOW() AND dept_emp.to_date > NOW();
 
