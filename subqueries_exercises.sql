@@ -37,15 +37,13 @@ WHERE to_date > NOW()
 -- How many people in the employees table are no longer working for the company? 
 -- Give the answer in a comment in your code.
 
-SELECT *
-FROM
-(SELECT COUNT(emp_no)
+SELECT COUNT(*)
 FROM employees
-JOIN dept_emp
-USING (emp_no)
-WHERE to_date < NOW()) AS c
-;
--- 91,479 employeesno longer working
+WHERE emp_no NOT IN
+( SELECT emp_no
+FROM dept_emp
+WHERE to_date > NOW());
+-- 59,900 employeesno longer working
 
 -- Find all the current department managers that are female. List their names in a comment in your code.
 
